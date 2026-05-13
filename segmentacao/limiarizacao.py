@@ -5,8 +5,6 @@ def limiarizacao(img_cinza, limiar):
     
     for y in range(altura):
         for x in range(largura):
-            # Se o pixel for maior que o limiar, vira branco (255)
-            # Caso contrário, vira preto (0)
             if img_cinza[y, x] >= limiar:
                 img_limiar[y, x] = 255
             else:

@@ -1,5 +1,5 @@
 import numpy as np
-def threshold(img_cinza, limiar):
+def limiarizacao(img_cinza, limiar):
     altura, largura = img_cinza.shape
     img_limiar = np.zeros((altura, largura), dtype=np.uint8)
     

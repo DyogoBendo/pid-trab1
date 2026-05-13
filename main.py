@@ -1,14 +1,19 @@
-from filtros_espaciais.passa_baixa.passa_baixa_media import passa_baixa_media
-from filtros_espaciais.passa_baixa.passa_baixa_mediana import passa_baixa_mediana
-from filtros_espaciais.passa_baixa.passa_baixa_gaussiana import passa_baixa_gaussiano
-from operacoes_pontuais.escala_cinza import rgb_para_cinza
-from operacoes_pontuais.negativo import negativo
-from segmentacao.limiarizacao_simples import threshold   
-from fastapi import FastAPI, File, UploadFile
-from utils.utils import ler_imagem, codificar_imagem
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 
-app = FastAPI()
+from filtros_espaciais.passa_baixa.rotas import router as rotas_passa_baixa
+from filtros_espaciais.passa_alta.rotas import router as rotas_passa_alta
+from histograma.rotas import router as rotas_histograma
+from operacoes_aritmeticas.rotas import router as rotas_operacoes_aritmeticas
+from operacoes_pontuais.rotas import router as rotas_operacoes_pontuais
+from segmentacao.rotas import router as rotas_segmentacao
+
+app = FastAPI(
+    title="API de Processamento de Imagens",
+    description="Implementação manual de algoritmos de PID",
+    version="1.0.0"
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,94 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/process/grayscale")
-async def process_grayscale(file: UploadFile = File(...)):
-    img = await ler_imagem(file)
-    if img is None:
-        return {"error": "Invalid image file."}
-    
-    print("Convertendo para escala de cinza...")
-    processed_img = rgb_para_cinza(img)
+app.include_router(rotas_passa_baixa, prefix="/passa-baixa", tags=["Filtros Passa-Baixa"])
+app.include_router(rotas_passa_alta, prefix="/passa-alta", tags=["Filtros Passa-Alta"])
+app.include_router(rotas_operacoes_aritmeticas, prefix="/operacao-aritmetica", tags=["Operações Aritméticas"])
+app.include_router(rotas_operacoes_pontuais, prefix="/operacao-pontual", tags=["Operações Pontuais"])
+app.include_router(rotas_histograma, prefix="/histograma", tags=["Histograma"])
+app.include_router(rotas_segmentacao, prefix="/segmentacao", tags=["Segmentação"])
 
-    return codificar_imagem(processed_img)
-
-@app.post("/process/threshold")
-async def process_threshold(value: int = 128, file: UploadFile = File(...)):
-    img = await ler_imagem(file)
-    if img is None:
-        return {"error": "Invalid image file."}
-    
-    print("Convertendo para escala de cinza...")
-    processed_img = rgb_para_cinza(img)
-    processed_img = threshold(processed_img, value)
-
-    return codificar_imagem(processed_img)
-
-@app.post("/process/passa_baixa_media")
-async def process_passa_baixa_media(kernel_size: int = 3, file: UploadFile = File(...)):
-    img = await ler_imagem(file)
-    if img is None:
-        return {"error": "Invalid image file."}
-    
-    print("Convertendo para escala de cinza...")
-    processed_img = rgb_para_cinza(img)
-    
-    print(f"Aplicando filtro Passa-Baixa (Média) com máscara {kernel_size}x{kernel_size}...")
-    processed_img = passa_baixa_media(processed_img, kernel_size)
-
-    return codificar_imagem(processed_img)
-
-@app.post("/process/passa_baixa_mediana")
-async def process_passa_baixa_media(kernel_size: int = 3, file: UploadFile = File(...)):
-    img = await ler_imagem(file)
-    if img is None:
-        return {"error": "Invalid image file."}
-    
-    print("Convertendo para escala de cinza...")
-    processed_img = rgb_para_cinza(img)
-    
-    print(f"Aplicando filtro Passa-Baixa (Mediana) com máscara {kernel_size}x{kernel_size}...")
-    processed_img = passa_baixa_mediana(processed_img, kernel_size)
-
-    return codificar_imagem(processed_img)
-
-@app.post("/process/negativo")
-async def process_negativo(file: UploadFile = File(...)):
-    img = await ler_imagem(file)
-    if img is None:
-        return {"error": "Invalid image file."}
-    
-    print("Convertendo para escala de cinza...")
-    processed_img = rgb_para_cinza(img)
-    
-    print(f"Aplicando filtro Negativo")
-    processed_img = negativo(processed_img)
-
-    return codificar_imagem(processed_img)
-
-@app.post("/process/passa_baixa_gaussiano")
-async def process_passa_baixa_gaussiano(
-    tamanho_mascara: int = 3, 
-    sigma: float = 1.0, 
-    file: UploadFile = File(...)
-):
-    img = await ler_imagem(file)
-    if img is None:
-        return {"error": "Invalid image file."}
-    
-    # Validações de segurança
-    if tamanho_mascara not in [3, 5]:
-        tamanho_mascara = 3
-    if sigma <= 0:
-        sigma = 0.1
-        
-    print(f"Aplicando Gaussiano: Máscara {tamanho_mascara}x{tamanho_mascara}, Sigma {sigma}...")
-    processed_img = rgb_para_cinza(img)
-        
-    processed_img = passa_baixa_gaussiano(processed_img, tamanho_mascara, sigma)
-
-    return codificar_imagem(processed_img)
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -15,7 +15,7 @@ def passa_baixa_media(img_cinza, tamanho_mascara=3):
             # Varre a vizinhança (a máscara 3x3) ao redor do pixel central
             for my in range(-offset, offset + 1):
                 for mx in range(-offset, offset + 1):
-                    soma_pixels += img_cinza[y + my, x + mx]
+                    soma_pixels += int(img_cinza[y + my, x + mx])
             
             # Calcula a média da região
             media = soma_pixels // (tamanho_mascara * tamanho_mascara)

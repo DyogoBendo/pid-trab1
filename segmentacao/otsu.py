@@ -1,15 +1,12 @@
 import numpy as np
 from .limiarizacao import limiarizacao
+from histograma.calculo_histograma import calculo_histograma
 
 def segmentacao_otsu(img_cinza):
     altura, largura = img_cinza.shape
     total_pixels = altura * largura
     
-    histograma = np.zeros(256, dtype=int)
-    for y in range(altura):
-        for x in range(largura):
-            pixel = img_cinza[y, x]
-            histograma[pixel] += 1
+    histograma = calculo_histograma(img_cinza)
             
     soma_total = 0.0
     for i in range(256):

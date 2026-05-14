@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
-import io
-from fastapi.responses import StreamingResponse
-from fastapi import UploadFile, HTTPException, Response, File
+import base64
+from fastapi import UploadFile, HTTPException
 from operacoes_pontuais.escala_cinza import rgb_para_cinza
+from histograma.calculo_histograma import calculo_histograma
 
 async def preparar_imagem(file: UploadFile):    
     contents = await file.read()
@@ -15,12 +15,17 @@ async def preparar_imagem(file: UploadFile):
         
     return rgb_para_cinza(img)
 
-def codificar_imagem(img):
-    success, encoded_image = cv2.imencode('.jpg', img)
-    if not success:
-        raise HTTPException(status_code=500, detail="Falha ao codificar a imagem.")
-    
-    return Response(content=encoded_image.tobytes(), media_type="image/jpeg")
+def codificar_imagem(img):    
+    sucesso, buffer_png = cv2.imencode('.png', img)
+    if not sucesso:
+        raise ValueError("Falha ao codificar a imagem")
+        
+    imagem_base64 = base64.b64encode(buffer_png).decode('utf-8')
+        
+    return {
+        "imagem": imagem_base64,
+        "histograma": calculo_histograma(img).tolist()
+    }    
 
 
 async def processar_imagem(file: UploadFile, funcao_filtro, **kwargs):            

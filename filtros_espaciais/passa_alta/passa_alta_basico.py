@@ -3,7 +3,7 @@ from utils.normalizacao import normalizar_matriz
 
 def passa_alta_basico(img_cinza, tamanho_mascara=3):    
     altura, largura = img_cinza.shape
-    temp = np.zeros((altura, largura), dtype=np.float32)
+    temp = np.zeros((altura, largura), dtype=np.uint8)
     
     offset = tamanho_mascara // 2
         
@@ -21,6 +21,6 @@ def passa_alta_basico(img_cinza, tamanho_mascara=3):
                     peso = mascara[my + offset, mx + offset]                    
                     soma_convolucao += pixel * peso
                                 
-            temp[y, x] = min(abs(soma_convolucao), 255)
+            temp[y, x] = min(abs(int(soma_convolucao)), 255)
             
     return temp

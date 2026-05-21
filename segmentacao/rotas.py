@@ -15,5 +15,5 @@ async def aplicar_segmentacao_otsu(file: UploadFile = File(...)):
     return await processar_imagem(file, segmentacao_otsu)
 
 @router.post("/crescimento-regioes")
-async def aplicar_segmentacao_otsu(tolerancia: int = 20, file: UploadFile = File(...)):
-    return await processar_imagem(file, segmentacao_crescimento_regioes, tolerancia=tolerancia)
+async def aplicar_segmentacao_otsu(x:int = 0, y:int = 0, tolerancia: int = 20, file: UploadFile = File(...)):
+    return await processar_imagem(file, segmentacao_crescimento_regioes, x=x, y = y, tolerancia=tolerancia)

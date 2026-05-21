@@ -6,13 +6,13 @@ vizinhos = [
         ( 1, -1), ( 1, 0), ( 1, 1)
     ]
 
-def segmentacao_crescimento_regioes(img_cinza, tolerancia=20):
+def segmentacao_crescimento_regioes(img_cinza, x, y, tolerancia=20):
     altura, largura = img_cinza.shape    
     img_resultado = np.zeros((altura, largura), dtype=np.uint8)        
         
     pontos_verificar = []                        
-    pontos_verificar.append((altura // 2, largura // 2, int(img_cinza[altura // 2, largura // 2])))
-    img_resultado[altura // 2, largura // 2,] = 255  
+    pontos_verificar.append((x, y, int(img_cinza[x, y])))
+    img_resultado[x, y] = 255  
                 
     while len(pontos_verificar) > 0:                
         y_atual, x_atual, valor_semente_base = pontos_verificar.pop()                

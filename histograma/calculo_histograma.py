@@ -1,7 +1,6 @@
 import numpy as np
 
-def calculo_histograma(img_cinza):
-    print(img_cinza)
+def calculo_histograma(img_cinza):    
     altura, largura = img_cinza.shape
     histograma = np.zeros(256, dtype=int)
     for y in range(altura):

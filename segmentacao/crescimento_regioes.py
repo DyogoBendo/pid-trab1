@@ -11,8 +11,8 @@ def segmentacao_crescimento_regioes(img_cinza, x, y, tolerancia=20):
     img_resultado = np.zeros((altura, largura), dtype=np.uint8)        
         
     pontos_verificar = []                        
-    pontos_verificar.append((x, y, int(img_cinza[x, y])))
-    img_resultado[x, y] = 255  
+    pontos_verificar.append((y, x, int(img_cinza[y, x])))
+    img_resultado[y, x] = 255  
                 
     while len(pontos_verificar) > 0:                
         y_atual, x_atual, valor_semente_base = pontos_verificar.pop()                
